@@ -18,7 +18,7 @@ const projectGalleryMap: Record<string, string[]> = {
   "HR/Admin Steps & Loyalty Tracker Dashboard": [
     "/images/admin1.png",
   ],
-  "Cabanatuan Tricycle Meter (Concept)": [
+  "Cabanatuan Tricycle Meter": [
     "/images/tri1.jpg",
     "/images/tri2.jpg",
   ],
