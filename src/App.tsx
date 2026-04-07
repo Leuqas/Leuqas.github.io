@@ -13,8 +13,8 @@ function App() {
         <HeroSection />
         <CinematicFooter />
         <AboutSection />
-        <ServicesSection />
         <ProjectsSection />
+        <ServicesSection />
         <WhyWorkSection />
       </main>
     </div>
