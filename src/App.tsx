@@ -12,8 +12,8 @@ function App() {
       <main className="relative z-10">
         <HeroSection />
         <CinematicFooter />
-        <AboutSection />
         <ProjectsSection />
+        <AboutSection />
         <ServicesSection />
         <WhyWorkSection />
       </main>
