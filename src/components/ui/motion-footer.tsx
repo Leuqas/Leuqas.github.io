@@ -277,7 +277,7 @@ export function CinematicFooter() {
           <div className="relative z-10 mx-auto mt-16 flex w-full max-w-5xl flex-col items-center justify-center px-4 md:mt-24 md:px-6">
             <h2
               data-footer-reveal
-              className="mb-10 text-center text-4xl font-black tracking-tight leading-[0.9] md:text-7xl"
+              className="mb-10 text-center text-3xl font-black tracking-tight leading-[1.02] sm:text-4xl md:text-7xl"
             >
               <span className="footer-heading-shell">
                 <span className="footer-heading-highlight" aria-hidden="true" />
