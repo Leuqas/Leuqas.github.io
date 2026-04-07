@@ -1,0 +1,85 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 220 19% 8%;
+  --foreground: 210 17% 95%;
+  --card: 220 16% 11%;
+  --card-foreground: 210 17% 95%;
+  --popover: 220 16% 11%;
+  --popover-foreground: 210 17% 95%;
+  --primary: 190 88% 55%;
+  --primary-foreground: 220 30% 9%;
+  --secondary: 156 72% 45%;
+  --secondary-foreground: 210 17% 95%;
+  --muted: 220 14% 16%;
+  --muted-foreground: 215 13% 72%;
+  --accent: 201 93% 40%;
+  --accent-foreground: 210 17% 95%;
+  --destructive: 0 72% 52%;
+  --destructive-foreground: 210 17% 95%;
+  --border: 220 13% 21%;
+  --input: 220 13% 21%;
+  --ring: 190 88% 55%;
+  --radius: 1rem;
+}
+
+* {
+  @apply border-border;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+}
+
+body {
+  @apply bg-background text-foreground antialiased;
+  background-image: radial-gradient(
+      circle at 0% 0%,
+      hsl(190 88% 55% / 0.14),
+      transparent 45%
+    ),
+    radial-gradient(circle at 100% 20%, hsl(156 72% 45% / 0.1), transparent 42%),
+    linear-gradient(to bottom, hsl(220 19% 8%), hsl(220 19% 7%));
+}
+
+.section-title {
+  @apply text-2xl font-semibold tracking-tight md:text-4xl;
+}
+
+.grid-overlay {
+  background-image: linear-gradient(to right, hsl(var(--border) / 0.5) 1px, transparent 1px),
+    linear-gradient(to bottom, hsl(var(--border) / 0.5) 1px, transparent 1px);
+  background-size: 52px 52px;
+  mask-image: linear-gradient(to bottom, black, transparent 88%);
+}
+
+.glass {
+  @apply border border-white/10 bg-white/5 backdrop-blur-xl;
+}
+
+@keyframes footer-scroll-marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@keyframes marquee-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee-scroll {
+  animation: marquee-scroll 22s linear infinite;
+}
