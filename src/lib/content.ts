@@ -73,7 +73,7 @@ export const projects = [
       "https://images.unsplash.com/photo-1551281044-8b27d5b1ed1b?auto=format&fit=crop&w=1200&q=80",
   },
   {
-    title: "Cabanatuan Tricycle Meter (Concept)",
+    title: "Cabanatuan Tricycle Meter",
     problem:
       "Passengers and drivers can disagree on fair fares, especially during variable traffic conditions.",
     solution:
