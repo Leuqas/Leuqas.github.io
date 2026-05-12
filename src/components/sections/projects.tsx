@@ -53,11 +53,10 @@ export function ProjectsSection() {
   return (
     <section id="projects" className="border-t border-border px-5 py-20 md:py-28">
       <div className="mx-auto max-w-5xl">
-        <p className="section-label">Selected work</p>
-        <h2 className="section-title mt-4">Systems with a paper trail.</h2>
+        <p className="section-label">things i made</p>
+        <h2 className="section-title mt-4">Selected works.</h2>
         <p className="mt-5 max-w-2xl text-lg leading-8 text-muted-foreground">
-          Recent projects written like case notes: what was broken, what changed,
-          and what the build was responsible for.
+          Recent builds for clients across health, mobility, and small business. Each project documents the problem, the build, and the outcome.
         </p>
 
         <div className="mt-14">

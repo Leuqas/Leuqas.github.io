@@ -45,10 +45,13 @@ html {
   scroll-padding-top: 5rem;
 }
 
-/* Force 80% UI scale on mobile (< 768 px). Applies to everything: text, images,
-   spacing, components. Reflows correctly because `zoom` resizes the layout
-   itself rather than just the visual transform. */
-@media (max-width: 767px) {
+/* Force 80% UI scale when a desktop browser window is resized below the mobile
+   breakpoint. Real touch devices (iOS Safari, Android Chrome) are scaled via
+   `initial-scale=0.8` in the viewport meta tag instead, which is the only
+   reliable way on iOS — `zoom` is unreliable on iOS Safari, especially with
+   sticky positioning. The `hover: hover` query excludes touch devices so they
+   don't get double-scaled (viewport scale × CSS zoom). */
+@media (hover: hover) and (max-width: 767px) {
   body {
     zoom: 0.8;
   }
