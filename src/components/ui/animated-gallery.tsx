@@ -85,7 +85,11 @@ export const ContainerSticky = ({
   return (
     <div
       className={cn(
-        "sticky left-0 top-0 min-h-[30rem] w-full overflow-hidden",
+        // overflow-visible (NOT hidden) is intentional: lets translated
+        // columns paint past the sticky's bottom into the empty area of
+        // ContainerScroll, eliminating the gap that appears at the bottom
+        // of the viewport when columns are translated upward.
+        "sticky left-0 top-0 min-h-[30rem] w-full",
         className
       )}
       style={{

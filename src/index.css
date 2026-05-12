@@ -31,9 +31,27 @@ body,
   min-height: 100%;
 }
 
+/* Prevent horizontal scroll caused by parallax columns spilling sideways
+   from the sticky gallery (overflow-visible there is intentional). Use
+   `overflow-x: clip` so we don't establish a scrolling context that would
+   break `position: sticky` ancestors. */
+html,
+body {
+  overflow-x: clip;
+}
+
 html {
   scroll-behavior: smooth;
   scroll-padding-top: 5rem;
+}
+
+/* Force 80% UI scale on mobile (< 768 px). Applies to everything: text, images,
+   spacing, components. Reflows correctly because `zoom` resizes the layout
+   itself rather than just the visual transform. */
+@media (max-width: 767px) {
+  body {
+    zoom: 0.8;
+  }
 }
 
 body {
