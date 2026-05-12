@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   ArrowRight,
+  ChevronDown,
   ChevronLeft,
   ChevronRight,
   Instagram,
@@ -21,12 +22,39 @@ import {
   GalleryContainer,
 } from "@/components/ui/animated-gallery";
 
-const imageModules = import.meta.glob("@/assets/images/explainedPH/*", {
-  eager: true,
-  as: "url",
-});
+type Photo = { thumb: string; full: string; name: string };
 
-const allImages = (Object.values(imageModules) as string[]).sort();
+const thumbModules = import.meta.glob<string>(
+  "@/assets/images/explainedPH/thumbs/*.webp",
+  { eager: true, query: "?url", import: "default" },
+);
+const fullModules = import.meta.glob<string>(
+  "@/assets/images/explainedPH/*.webp",
+  { eager: true, query: "?url", import: "default" },
+);
+
+const thumbByName = new Map<string, string>();
+for (const [p, url] of Object.entries(thumbModules)) {
+  const name = p.split("/").pop();
+  if (name) thumbByName.set(name, url);
+}
+
+const photos: Photo[] = Object.entries(fullModules)
+  .filter(([p]) => !p.includes("/thumbs/"))
+  .map(([p, full]) => {
+    const name = p.split("/").pop() ?? p;
+    const thumb = thumbByName.get(name);
+    if (!thumb) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        `[gallery] missing thumb for ${name}; falling back to full URL. Run \`npm run optimize:images\`.`,
+      );
+    }
+    return { thumb: thumb ?? full, full, name };
+  })
+  .sort((a, b) => a.name.localeCompare(b.name));
+
+const allImages = photos;
 
 export function PhotographyPage() {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
@@ -41,6 +69,8 @@ export function PhotographyPage() {
       rightStart: third * 2,
     };
   }, []);
+
+  const activePhoto = activeIndex !== null ? allImages[activeIndex] : null;
 
   useEffect(() => {
     const handleKey = (event: KeyboardEvent) => {
@@ -170,7 +200,7 @@ export function PhotographyPage() {
         </ContainerStagger>
 
         <div
-          className="pointer-events-none absolute inset-x-0 top-0 z-0 h-[70vh] w-full opacity-60"
+          className="pointer-events-none absolute inset-x-0 top-0 z-0 hidden h-[70vh] w-full opacity-60 md:block"
           style={{
             background: "linear-gradient(to right, gray, rebeccapurple, blue)",
             filter: "blur(84px)",
@@ -180,15 +210,22 @@ export function PhotographyPage() {
 
       </section>
 
-      <ContainerScroll id="gallery-grid" className="relative -mt-[100px] h-[500vh]">
+      <div className="relative z-10 -mt-[-50px] flex justify-center px-5 pb-2">
+        <p className="inline-flex items-center gap-2 rounded-full border border-border bg-background/70 px-3 py-1 text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground backdrop-blur-sm">
+          <ChevronDown className="h-3.5 w-3.5 animate-bounce text-primary" />
+          Scroll to explore · click any photo to enlarge
+        </p>
+      </div>
+
+      <ContainerScroll id="gallery-grid" className="relative -mt-[100px] h-[700vh]">
         <ContainerSticky className="h-svh">
           <GalleryContainer className="mx-auto max-w-6xl px-4">
-            <GalleryCol yRange={["0%", "-55%"]} className="-mt-2">
-              {columns.leftImages.map((imageUrl, index) => {
+            <GalleryCol yRange={["0%", "-75%"]} className="-mt-2 pb-[300px]">
+              {columns.leftImages.map((photo, index) => {
                 const globalIndex = index;
                 return (
                   <button
-                    key={`left-${index}`}
+                    key={`left-${photo.name}`}
                     type="button"
                     onClick={() => setActiveIndex(globalIndex)}
                     className="group block w-full overflow-hidden rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
@@ -196,19 +233,23 @@ export function PhotographyPage() {
                   >
                     <img
                       className="aspect-video block h-auto max-h-full w-full cursor-zoom-in rounded-md object-cover shadow transition-transform duration-300 group-hover:scale-[1.02]"
-                      src={imageUrl}
+                      src={photo.thumb}
                       alt={`Photograph ${globalIndex + 1}`}
+                      loading="lazy"
+                      decoding="async"
+                      width={500}
+                      height={281}
                     />
                   </button>
                 );
               })}
             </GalleryCol>
-            <GalleryCol className="-mt-20" yRange={["0%", "-65%"]}>
-              {columns.middleImages.map((imageUrl, index) => {
+            <GalleryCol className="-mt-20 pb-[300px]" yRange={["0%", "-80%"]}>
+              {columns.middleImages.map((photo, index) => {
                 const globalIndex = columns.middleStart + index;
                 return (
                   <button
-                    key={`mid-${index}`}
+                    key={`mid-${photo.name}`}
                     type="button"
                     onClick={() => setActiveIndex(globalIndex)}
                     className="group block w-full overflow-hidden rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
@@ -216,19 +257,23 @@ export function PhotographyPage() {
                   >
                     <img
                       className="aspect-video block h-auto max-h-full w-full cursor-zoom-in rounded-md object-cover shadow transition-transform duration-300 group-hover:scale-[1.02]"
-                      src={imageUrl}
+                      src={photo.thumb}
                       alt={`Photograph ${globalIndex + 1}`}
+                      loading="lazy"
+                      decoding="async"
+                      width={500}
+                      height={281}
                     />
                   </button>
                 );
               })}
             </GalleryCol>
-            <GalleryCol yRange={["0%", "-50%"]} className="-mt-2">
-              {columns.rightImages.map((imageUrl, index) => {
+            <GalleryCol yRange={["0%", "-65%"]} className="-mt-2 pb-[300px]">
+              {columns.rightImages.map((photo, index) => {
                 const globalIndex = columns.rightStart + index;
                 return (
                   <button
-                    key={`right-${index}`}
+                    key={`right-${photo.name}`}
                     type="button"
                     onClick={() => setActiveIndex(globalIndex)}
                     className="group block w-full overflow-hidden rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
@@ -236,8 +281,12 @@ export function PhotographyPage() {
                   >
                     <img
                       className="aspect-video block h-auto max-h-full w-full cursor-zoom-in rounded-md object-cover shadow transition-transform duration-300 group-hover:scale-[1.02]"
-                      src={imageUrl}
+                      src={photo.thumb}
                       alt={`Photograph ${globalIndex + 1}`}
+                      loading="lazy"
+                      decoding="async"
+                      width={500}
+                      height={281}
                     />
                   </button>
                 );
@@ -247,7 +296,7 @@ export function PhotographyPage() {
         </ContainerSticky>
       </ContainerScroll>
 
-      <section className="mx-auto flex max-w-5xl flex-col items-start justify-between gap-6 px-5 py-16 md:flex-row md:items-center">
+      <section className="relative z-10 mx-auto -mt-[75vh] flex max-w-5xl flex-col items-start justify-between gap-6 px-5 py-16 md:-mt-[35vh] md:flex-row md:items-center">
         <h2 className="text-4xl font-semibold tracking-tight md:text-5xl">This is also me —</h2>
         <Link to="/" className="btn-primary">
           Back to dev portfolio
@@ -255,7 +304,7 @@ export function PhotographyPage() {
         <p className="section-label md:text-right">Leuqas Yabot · Photography · 2025</p>
       </section>
 
-      {activeIndex !== null ? (
+      {activeIndex !== null && activePhoto ? (
         <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/95 p-4 text-white">
           <button
             type="button"
@@ -274,9 +323,10 @@ export function PhotographyPage() {
             <ChevronLeft className="h-6 w-6" />
           </button>
           <img
-            src={allImages[activeIndex]}
+            src={activePhoto.full}
             alt={`Expanded photograph ${activeIndex + 1}`}
             className="max-h-[84vh] max-w-[92vw] rounded-sm object-contain"
+            decoding="async"
           />
           <button
             type="button"

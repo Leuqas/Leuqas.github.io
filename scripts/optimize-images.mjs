@@ -1,12 +1,19 @@
 /**
- * Convert all PNG/JPG/JPEG images under known asset folders to compressed
- * .webp variants and remove the originals so all references in the app
- * (which we update to .webp) stay valid.
+ * Image pipeline for the portfolio.
+ *
+ * Three passes (in order):
+ *   1. Convert .png/.jpg/.jpeg under TARGET_DIRS to .webp and delete originals.
+ *   2. Resize-in-place any .webp directly inside PHOTO_DIR whose width > MAX_FULL_WIDTH.
+ *      These become the "full" tier used by the lightbox.
+ *   3. Generate 500-px-wide thumbnail variants in PHOTO_DIR/thumbs/ for the gallery grid.
+ *
+ * Idempotent: a second run reports zero work. mtime comparison gates the thumb pass;
+ * width inspection gates the resize pass.
  *
  * Usage:
- *   npm run optimize:images           # convert + delete originals
- *   npm run optimize:images -- --keep # convert but keep originals
- *   npm run optimize:images -- --dry  # show what would happen
+ *   npm run optimize:images           # convert + resize + thumbs
+ *   npm run optimize:images -- --keep # keep .png/.jpg originals after convert
+ *   npm run optimize:images -- --dry  # log only, no writes
  */
 import { promises as fs } from "node:fs";
 import path from "node:path";
@@ -21,7 +28,16 @@ const TARGET_DIRS = [
   "src/assets/images",
 ];
 
-const QUALITY = 80;
+// The photography gallery source folder. Resize + thumb passes target this only.
+const PHOTO_DIR = path.join(ROOT, "src/assets/images/explainedPH");
+const THUMB_DIR = path.join(PHOTO_DIR, "thumbs");
+
+const FULL_QUALITY = 80;
+const FULL_MAX_WIDTH = 1600;
+const THUMB_QUALITY = 70;
+const THUMB_WIDTH = 500;
+const SHARP_EFFORT = 6;
+
 const SOURCE_EXT = new Set([".png", ".jpg", ".jpeg"]);
 
 const args = new Set(process.argv.slice(2));
@@ -33,6 +49,12 @@ let totalAfter = 0;
 let converted = 0;
 let skipped = 0;
 let removed = 0;
+let resizedInPlace = 0;
+let resizeBytesBefore = 0;
+let resizeBytesAfter = 0;
+let thumbsCreated = 0;
+let thumbsSkipped = 0;
+let thumbBytesTotal = 0;
 
 async function walk(dir) {
   let entries;
@@ -79,7 +101,7 @@ async function processFile(file) {
   }
 
   await sharp(file)
-    .webp({ quality: QUALITY, effort: 6 })
+    .webp({ quality: FULL_QUALITY, effort: SHARP_EFFORT })
     .toFile(webpPath);
 
   const afterStat = await fs.stat(webpPath);
@@ -104,14 +126,157 @@ function fmt(b) {
   return `${(b / 1024 ** 2).toFixed(2)} MB`;
 }
 
+// ---------- Pass 2: resize-in-place .webp originals to ≤ FULL_MAX_WIDTH ----------
+async function resizeFullPass() {
+  let entries;
+  try {
+    entries = await fs.readdir(PHOTO_DIR, { withFileTypes: true });
+  } catch {
+    return;
+  }
+
+  for (const entry of entries) {
+    if (!entry.isFile()) continue;
+    if (path.extname(entry.name).toLowerCase() !== ".webp") continue;
+
+    const file = path.join(PHOTO_DIR, entry.name);
+    const rel = path.relative(ROOT, file);
+
+    // Read once into a Node Buffer so Sharp never holds a Windows file handle.
+    let sourceBuf;
+    try {
+      sourceBuf = await fs.readFile(file);
+    } catch (err) {
+      console.warn(`! couldn't read ${rel}: ${err.message}`);
+      continue;
+    }
+
+    let meta;
+    try {
+      meta = await sharp(sourceBuf).metadata();
+    } catch (err) {
+      console.warn(`! couldn't read metadata for ${rel}: ${err.message}`);
+      continue;
+    }
+    if (!meta.width || meta.width <= FULL_MAX_WIDTH) continue;
+
+    const beforeSize = sourceBuf.byteLength;
+    resizeBytesBefore += beforeSize;
+
+    if (DRY_RUN) {
+      console.log(`[dry] would resize ${rel} (${meta.width}px → ${FULL_MAX_WIDTH}px)`);
+      continue;
+    }
+
+    // Process from buffer (no file handle) → overwrite original.
+    const resizedBuf = await sharp(sourceBuf)
+      .resize({ width: FULL_MAX_WIDTH, withoutEnlargement: true })
+      .webp({ quality: FULL_QUALITY, effort: SHARP_EFFORT })
+      .toBuffer();
+    await fs.writeFile(file, resizedBuf);
+
+    const afterSize = (await fs.stat(file)).size;
+    resizeBytesAfter += afterSize;
+    resizedInPlace++;
+
+    const savedPct = Math.round((1 - afterSize / beforeSize) * 100);
+    console.log(
+      `→ resized ${rel} (${meta.width}px → ${FULL_MAX_WIDTH}px, ` +
+        `${fmt(beforeSize)} → ${fmt(afterSize)}, ${savedPct}% smaller)`
+    );
+  }
+}
+
+// ---------- Pass 3: generate THUMB_WIDTH thumbnails into PHOTO_DIR/thumbs/ ----------
+async function thumbnailPass() {
+  let entries;
+  try {
+    entries = await fs.readdir(PHOTO_DIR, { withFileTypes: true });
+  } catch {
+    return;
+  }
+
+  if (!DRY_RUN) await fs.mkdir(THUMB_DIR, { recursive: true });
+
+  for (const entry of entries) {
+    if (!entry.isFile()) continue;
+    if (path.extname(entry.name).toLowerCase() !== ".webp") continue;
+
+    const source = path.join(PHOTO_DIR, entry.name);
+    const thumb = path.join(THUMB_DIR, entry.name);
+    const rel = path.relative(ROOT, thumb);
+
+    // Skip if thumb exists and is newer than source.
+    try {
+      const [srcStat, thumbStat] = await Promise.all([
+        fs.stat(source),
+        fs.stat(thumb),
+      ]);
+      if (thumbStat.mtimeMs >= srcStat.mtimeMs) {
+        thumbsSkipped++;
+        continue;
+      }
+    } catch {
+      /* thumb missing — fall through to generate */
+    }
+
+    if (DRY_RUN) {
+      console.log(`[dry] would generate thumb ${rel}`);
+      continue;
+    }
+
+    await sharp(source)
+      .resize({ width: THUMB_WIDTH, withoutEnlargement: true })
+      .webp({ quality: THUMB_QUALITY, effort: SHARP_EFFORT })
+      .toFile(thumb);
+
+    const size = (await fs.stat(thumb)).size;
+    thumbBytesTotal += size;
+    thumbsCreated++;
+    console.log(`✓ thumb ${rel} (${fmt(size)})`);
+  }
+}
+
+// ---------- Run all passes ----------
+
+// Pass 1: convert PNG/JPG/JPEG → webp under all target dirs.
 for (const rel of TARGET_DIRS) {
   await walk(path.join(ROOT, rel));
 }
 
-console.log(
-  `\nDone. Converted ${converted}, skipped ${skipped}, removed ${removed} original(s). ` +
-    (totalBefore
-      ? `Bytes: ${fmt(totalBefore)} → ${fmt(totalAfter)} ` +
-        `(${Math.round((1 - totalAfter / totalBefore) * 100)}% smaller)`
-      : "")
-);
+// Pass 2 & 3: only the photography gallery folder.
+await resizeFullPass();
+await thumbnailPass();
+
+// ---------- Summary ----------
+
+console.log("\n—— Summary ——");
+if (converted || removed || skipped) {
+  console.log(
+    `Convert: ${converted} new webp, ${skipped} skipped, ${removed} original(s) removed` +
+      (totalBefore
+        ? ` — ${fmt(totalBefore)} → ${fmt(totalAfter)} ` +
+          `(${Math.round((1 - totalAfter / totalBefore) * 100)}% smaller)`
+        : "")
+  );
+} else {
+  console.log("Convert: nothing to do.");
+}
+
+if (resizedInPlace) {
+  console.log(
+    `Resize:  ${resizedInPlace} file(s) shrunk to ≤ ${FULL_MAX_WIDTH}px ` +
+      `— ${fmt(resizeBytesBefore)} → ${fmt(resizeBytesAfter)}`
+  );
+} else {
+  console.log("Resize:  nothing to do (all originals already ≤ " + FULL_MAX_WIDTH + "px).");
+}
+
+if (thumbsCreated) {
+  console.log(
+    `Thumbs:  ${thumbsCreated} created (${thumbsSkipped} up-to-date), ` +
+      `total ${fmt(thumbBytesTotal)}, avg ${fmt(Math.round(thumbBytesTotal / thumbsCreated))}`
+  );
+} else {
+  console.log(`Thumbs:  ${thumbsSkipped} up-to-date, 0 created.`);
+}

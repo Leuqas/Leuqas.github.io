@@ -10,9 +10,9 @@ import {
 
 export function HeroSection() {
   return (
-    <section className="relative flex min-h-screen items-center overflow-hidden px-5 pt-16">
+    <section className="relative flex min-h-screen items-start overflow-hidden px-5 pt-16 md:items-center">
       <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle,hsl(var(--foreground)/0.13)_1px,transparent_1px)] [background-size:24px_24px] [mask-image:radial-gradient(circle_at_center,black,transparent_72%)]" />
-      <div className="mx-auto grid w-full max-w-5xl items-center gap-12 py-20 md:grid-cols-[1.1fr_0.9fr] md:py-24">
+      <div className="mx-auto grid w-full max-w-5xl items-center gap-5 py-8 md:grid-cols-[1.1fr_0.9fr] md:gap-12 md:py-24">
         <div className="order-2 md:order-1">
           <p className="section-label inline-flex items-center gap-2">
             <MapPin className="h-3.5 w-3.5 text-primary" />
@@ -86,10 +86,21 @@ export function HeroSection() {
         </div>
 
         <div className="order-1 flex justify-center md:order-2 md:justify-end">
+          <div className="relative md:hidden">
+            <img
+              src="/images/leuqas-cropped.webp"
+              alt="Leuqas Yabot"
+              className="h-28 w-28 rounded-full border-2 border-primary/20 object-cover shadow-lg"
+            />
+            <span className="absolute -bottom-1 -right-1 inline-flex items-center gap-1 rounded-full border border-primary/20 bg-background px-2 py-0.5 text-[10px] font-semibold uppercase tracking-widest text-primary shadow-sm">
+              <MapPin className="h-3 w-3" />
+              NE
+            </span>
+          </div>
           <img
             src="/images/leuqas.webp"
             alt="Leuqas Yabot"
-            className="w-full max-w-48 object-contain md:max-w-[420px]"
+            className="hidden w-full max-w-48 object-contain md:block md:max-w-[420px]"
           />
         </div>
       </div>
