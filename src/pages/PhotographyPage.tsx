@@ -217,7 +217,7 @@ export function PhotographyPage() {
         </p>
       </div>
 
-      <ContainerScroll id="gallery-grid" className="relative -mt-[-100px] h-[700vh]">
+      <ContainerScroll id="gallery-grid" className="relative -mt-[100px] h-[700vh]">
         <ContainerSticky className="h-svh">
           <GalleryContainer className="mx-auto max-w-6xl px-4">
             <GalleryCol yRange={["0%", "-75%"]} className="-mt-2 pb-[300px]">
