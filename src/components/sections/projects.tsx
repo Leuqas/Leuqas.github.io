@@ -1,75 +1,21 @@
-import { useEffect, useMemo, useState } from "react";
-import { ChevronLeft, ChevronRight, ImageIcon, X } from "lucide-react";
+import { useEffect, useState } from "react";
+import { ChevronLeft, ChevronRight, ExternalLink, X } from "lucide-react";
 import { projects } from "@/lib/content";
 
-const projectGalleryMap: Record<string, string[]> = {
-  "Legalease PH": [
-    "/images/legal1.png",
-    "/images/legal2.png",
-    "/images/legal3.png",
-    "/images/legal4.png",
-  ],
-  "Business Website Concepts": [
-    "/images/cafe1.png",
-    "/images/cafe2.png",
-    "/images/cafe3.png",
-    "/images/cafe4.png",
-  ],
-  "HR/Admin Steps & Loyalty Tracker Dashboard": [
-    "/images/admin1.png",
-  ],
-  "Cabanatuan Tricycle Meter": [
-    "/images/tri1.jpg",
-    "/images/tri2.jpg",
-  ],
-};
-
-function getThumbWidthClass(imageCount: number) {
-  if (imageCount <= 1) return "min-w-full";
-  if (imageCount === 2) return "min-w-[44%]";
-  if (imageCount === 3) return "min-w-[46%]";
-  return "min-w-[42%]";
-}
-
-function getOverlapOffset(imageCount: number) {
-  if (imageCount <= 1) return 0;
-  if (imageCount === 2) return -100;
-  if (imageCount === 3) return -150;
-  return -170;
-}
-
-function isLikelyPortrait(src: string) {
-  // return /tri\d+\.(png|jpe?g|webp)$/i.test(src);
-  return false; 
+function getStatusClass(status: string) {
+  if (status === "Live") return "bg-emerald-100 text-emerald-800 border-emerald-200";
+  if (status === "Completed") return "bg-blue-100 text-blue-800 border-blue-200";
+  if (status.includes("LGU")) return "bg-amber-100 text-amber-800 border-amber-200";
+  if (status.includes("concluded")) return "bg-zinc-100 text-zinc-700 border-zinc-200";
+  return "bg-purple-100 text-purple-800 border-purple-200";
 }
 
 export function ProjectsSection() {
-  const initialOrders = useMemo(() => {
-    return projects.map((project) => {
-      const images = projectGalleryMap[project.title] ?? [project.image];
-      return images.map((_, index) => index);
-    });
-  }, []);
-
-  const [imageOrders, setImageOrders] = useState<number[][]>(initialOrders);
   const [activeGallery, setActiveGallery] = useState<{
     projectTitle: string;
     images: string[];
     index: number;
   } | null>(null);
-
-  useEffect(() => {
-    const intervalId = window.setInterval(() => {
-      setImageOrders((current) =>
-        current.map((order) => {
-          if (order.length <= 1) return order;
-          return [...order.slice(1), order[0]];
-        })
-      );
-    }, 2670);
-
-    return () => window.clearInterval(intervalId);
-  }, []);
 
   useEffect(() => {
     const handleEsc = (event: KeyboardEvent) => {
@@ -105,129 +51,100 @@ export function ProjectsSection() {
   };
 
   return (
-    <section id="projects" className="container py-16 md:py-24">
-      <h2 className="section-title">Projects</h2>
-      <p className="mt-3 max-w-2xl text-muted-foreground">
-        Problem first, solution second. Here are sample builds and concepts focused on
-        practical business results.
-      </p>
+    <section id="projects" className="border-t border-border px-5 py-20 md:py-28">
+      <div className="mx-auto max-w-5xl">
+        <p className="section-label">Selected work</p>
+        <h2 className="section-title mt-4">Systems with a paper trail.</h2>
+        <p className="mt-5 max-w-2xl text-lg leading-8 text-muted-foreground">
+          Recent projects written like case notes: what was broken, what changed,
+          and what the build was responsible for.
+        </p>
 
-      <div className="mt-10 grid gap-5">
-        {projects.map((project, projectIndex) => {
-          const galleryImages = projectGalleryMap[project.title] ?? [project.image];
-          const orderedIndexes = imageOrders[projectIndex] ??
-            galleryImages.map((_, index) => index);
-          const isSingleImage = galleryImages.length === 1;
-          const allPortrait = galleryImages.every((image) => isLikelyPortrait(image));
-          const thumbWidthClass = getThumbWidthClass(galleryImages.length);
-          const overlapOffset = getOverlapOffset(galleryImages.length);
+        <div className="mt-14">
+          {projects.map((project, projectIndex) => (
+            <article
+              key={project.title}
+              className="grid gap-8 border-b border-border py-12 first:border-t md:grid-cols-[0.18fr_1fr_0.75fr]"
+            >
+              <div className="font-serif text-6xl font-semibold text-foreground/35 md:text-7xl">
+                {String(projectIndex + 1).padStart(2, "0")}
+              </div>
 
-          return (
-            <article key={project.title} className="glass rounded-3xl p-6">
-              <div
-                className={`grid gap-5 ${
-                  projectIndex % 2 === 0
-                    ? "md:grid-cols-[1.2fr_0.8fr]"
-                    : "md:grid-cols-[0.8fr_1.2fr]"
-                }`}
-              >
-                <div className={`${projectIndex % 2 === 0 ? "md:order-1" : "md:order-2"}`}>
-                  <div className="flex items-start justify-between gap-3">
-                    <h3 className="text-xl font-semibold">{project.title}</h3>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        openGallery(
-                          project.title,
-                          galleryImages,
-                          orderedIndexes[0] ?? 0
-                        )
-                      }
-                      className="inline-flex items-center gap-1 text-xs uppercase tracking-wider text-primary transition-opacity hover:opacity-80"
-                    >
-                      <ImageIcon className="h-3.5 w-3.5" />
-                      See Images
-                    </button>
+              <div>
+                <div className="flex flex-wrap items-start justify-between gap-4">
+                  <div>
+                    <h3 className="text-3xl font-semibold tracking-tight">
+                      {project.title}
+                    </h3>
+                    <p className="mt-2 text-sm font-semibold text-muted-foreground">
+                      {project.period}
+                    </p>
                   </div>
-                  <p className="mt-4 text-sm text-muted-foreground">
-                    <strong className="text-foreground">Problem:</strong> {project.problem}
-                  </p>
-                  <p className="mt-2 text-sm text-muted-foreground">
-                    <strong className="text-foreground">Solution:</strong> {project.solution}
-                  </p>
-                  <p className="mt-3 text-xs text-muted-foreground">{project.note}</p>
+                  <span className={`rounded-full border px-3 py-1 text-xs font-bold ${getStatusClass(project.status)}`}>
+                    {project.status}
+                  </span>
                 </div>
 
-                <div className={`${projectIndex % 2 === 0 ? "md:order-2" : "md:order-1"}`}>
-                  <div
-                    className={`relative rounded-2xl border border-white/10 bg-black/25 p-3 ${
-                      isSingleImage ? "ml-auto w-fit min-h-0" : "h-full min-h-40"
-                    }`}
+                <div className="mt-7 space-y-6">
+                  <div>
+                    <p className="section-label">Problem</p>
+                    <p className="mt-2 leading-7 text-muted-foreground">{project.problem}</p>
+                  </div>
+                  <div>
+                    <p className="section-label">Solution</p>
+                    <p className="mt-2 leading-7 text-muted-foreground">{project.solution}</p>
+                  </div>
+                </div>
+
+                <div className="mt-7 flex flex-wrap gap-2">
+                  {project.stack.map((item) => (
+                    <span key={item} className="tag">
+                      {item}
+                    </span>
+                  ))}
+                </div>
+
+                {"url" in project && project.url ? (
+                  <a
+                    href={project.url as string}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline"
                   >
-                    <div
-                      className={`flex h-full items-center pb-1 ${
-                        isSingleImage
-                          ? "justify-end overflow-visible"
-                          : allPortrait
-                            ? "justify-end gap-3 overflow-x-auto"
-                            : "gap-2 overflow-x-auto"
-                      }`}
-                    >
-                      {orderedIndexes.map((imageIndex, stackIndex) => (
-                        (() => {
-                          const imageSrc = galleryImages[imageIndex];
-                          const portraitLike = isLikelyPortrait(imageSrc);
+                    <ExternalLink className="h-3.5 w-3.5" />
+                    {(project.url as string).replace(/^https?:\/\//, "")}
+                  </a>
+                ) : null}
+              </div>
 
-                          return (
-                            <button
-                              key={`${project.title}-${imageIndex}`}
-                              type="button"
-                              onClick={() =>
-                                openGallery(project.title, galleryImages, imageIndex)
-                              }
-                              className={`group relative h-24 ${
-                                portraitLike
-                                  ? isSingleImage
-                                    ? "ml-auto w-[110px] md:w-[128px] flex-none"
-                                    : "w-[84px] md:w-[96px] flex-none"
-                                  : isSingleImage
-                                    ? "ml-auto w-auto flex-none"
-                                    : `${thumbWidthClass} flex-1`
-                              } rounded-xl border border-white/15 shadow-[0_14px_24px_rgba(2,6,23,1)] transition-transform duration-500 hover:scale-[1.03] hover:shadow-[0_22px_38px_rgba(2,6,23,0.85)] md:h-28`}
-                              style={{
-                                marginLeft:
-                                  stackIndex === 0
-                                    ? 0
-                                    : portraitLike
-                                      ? -24
-                                      : overlapOffset,
-                                zIndex: orderedIndexes.length - stackIndex,
-                              }}
-                            >
-                              <img
-                                src={imageSrc}
-                                alt={`${project.title} screenshot ${imageIndex + 1}`}
-                                className={`rounded-xl shadow-[0_8px_18px_rgba(0,0,0,0.45)] ${
-                                  isSingleImage
-                                    ? "ml-auto h-full w-auto max-w-[420px] object-contain object-right"
-                                    : portraitLike
-                                      ? "h-full w-full object-contain object-center"
-                                      : "h-full w-full object-cover"
-                                }`}
-                                loading="lazy"
-                              />
-                              <span className="pointer-events-none absolute inset-0 rounded-xl bg-black/20 opacity-0 transition-opacity group-hover:opacity-100" />
-                            </button>
-                          );
-                        })()
-                      ))}
-                    </div>
+              <div>
+                {project.images.length > 0 ? (
+                  <div className="grid grid-cols-2 gap-2">
+                    {project.images.map((image, imageIndex) => (
+                      <button
+                        key={image}
+                        type="button"
+                        onClick={() => openGallery(project.title, project.images, imageIndex)}
+                        className="group overflow-hidden rounded-sm border border-border bg-secondary"
+                      >
+                        <img
+                          src={image}
+                          alt={`${project.title} screenshot ${imageIndex + 1}`}
+                          className="h-36 w-full object-cover transition duration-500 group-hover:scale-105 md:h-44"
+                          loading="lazy"
+                        />
+                      </button>
+                    ))}
                   </div>
-                </div>
+                ) : (
+                  <div className="flex min-h-48 items-end rounded-sm border border-dashed border-border bg-secondary p-5">
+                    <p className="section-label">Private build · images withheld</p>
+                  </div>
+                )}
               </div>
             </article>
-          );
-        })}
+          ))}
+        </div>
       </div>
 
       {activeGallery ? (

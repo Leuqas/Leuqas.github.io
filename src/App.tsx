@@ -1,23 +1,17 @@
-import { AboutSection } from "@/components/sections/about";
-import { HeroSection } from "@/components/sections/hero";
-import { MarqueeStripSection } from "@/components/sections/marquee-strip";
-import { ProjectsSection } from "@/components/sections/projects";
-import { ServicesSection } from "@/components/sections/services";
-import { WhyWorkSection } from "@/components/sections/why-work";
-import { CinematicFooter } from "@/components/ui/motion-footer";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { Navbar } from "@/components/ui/navbar";
+import { HomePage } from "@/pages/HomePage";
+import { PhotographyPage } from "@/pages/PhotographyPage";
 
 function App() {
   return (
-    <div className="relative min-h-screen overflow-x-hidden">
-      <main className="relative z-10">
-        <HeroSection />
-        <CinematicFooter />
-        <ProjectsSection />
-        <AboutSection />
-        <ServicesSection />
-        <WhyWorkSection />
-      </main>
-    </div>
+    <BrowserRouter>
+      <Navbar />
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/photography" element={<PhotographyPage />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
