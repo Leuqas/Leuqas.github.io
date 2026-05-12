@@ -74,6 +74,11 @@ export function PhotographyPage() {
   const activePhoto = activeIndex !== null ? allImages[activeIndex] : null;
 
   useEffect(() => {
+    const t = setTimeout(() => window.scrollTo({ top: 0, behavior: "auto" }), 300);
+    return () => clearTimeout(t);
+  }, []);
+
+  useEffect(() => {
     const handleKey = (event: KeyboardEvent) => {
       if (event.key === "Escape") setActiveIndex(null);
       if (event.key === "ArrowLeft") showPrev();
@@ -107,7 +112,7 @@ export function PhotographyPage() {
               to="/"
               className="section-label inline-flex items-center gap-2 hover:text-primary"
             >
-              ← Web Development
+              <span className="underline">← Web Development</span>
             </Link>
           </ContainerAnimated>
 

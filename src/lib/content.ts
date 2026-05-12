@@ -59,7 +59,7 @@ export const projects = [
     images: ["/images/provident1.webp", "/images/provident2.webp"],
   },
     {
-    title: "E-Notarization SaaS Platform",
+    title: "Supreme Court Compliant E-Notarization SaaS Platform",
     period: "Apr 2026 – Present",
     status: "Live",
     stack: ["Node.js", "React", "PostgreSQL"],

@@ -5,7 +5,7 @@ import { Menu, X } from "lucide-react";
 const sectionLinks = [
   { label: "Work", id: "projects" },
   { label: "About", id: "about" },
-  { label: "Services", id: "services" },
+  // { label: "Services", id: "services" },
 ];
 
 export function Navbar() {
@@ -30,6 +30,17 @@ export function Navbar() {
     }
 
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  const goToTop = () => {
+    setOpen(false);
+
+    if (location.pathname !== "/") {
+      navigate("/");
+      return;
+    }
+
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
@@ -60,11 +71,11 @@ export function Navbar() {
           ))}
           <Link
             to="/photography"
-            className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+            className="text-sm font-medium text-muted-foreground underline underline-offset-4 transition-colors hover:text-foreground"
           >
             Photography
           </Link>
-          <button type="button" onClick={() => goToSection("contact")} className="btn-primary">
+          <button type="button" onClick={goToTop} className="btn-primary">
             Hire me
           </button>
         </div>
@@ -95,11 +106,11 @@ export function Navbar() {
             <Link
               to="/photography"
               onClick={() => setOpen(false)}
-              className="rounded-md px-2 py-2 text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground"
+              className="rounded-md px-2 py-2 text-sm font-medium text-muted-foreground underline underline-offset-4 hover:bg-secondary hover:text-foreground"
             >
               Photography
             </Link>
-            <button type="button" onClick={() => goToSection("contact")} className="btn-primary w-fit">
+            <button type="button" onClick={goToTop} className="btn-primary w-fit">
               Hire me
             </button>
           </div>
