@@ -321,7 +321,7 @@ export function PhotographyPage() {
         <Link to="/" className="btn-primary">
           Back to dev portfolio
         </Link>
-        <p className="section-label md:text-right">Leuqas Yabot · Photography · 2025</p>
+        <p className="section-label md:text-right">Leuqas Yabot · Photography · 2026</p>
       </section>
 
       {activeIndex !== null && activePhoto ? (
