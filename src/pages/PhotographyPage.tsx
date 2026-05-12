@@ -218,7 +218,7 @@ export function PhotographyPage() {
         </p>
       </div>
 
-      <ContainerScroll id="gallery-grid" className="relative -mt-[100px] h-[700vh]">
+      <ContainerScroll id="gallery-grid" className="relative h-[700vh]">
         <ContainerSticky className="h-svh top-16">
           <GalleryContainer className="mx-auto max-w-6xl px-4">
             <GalleryCol yRange={["0%", "-75%"]} className="-mt-2 pb-[300px]">
@@ -316,7 +316,7 @@ export function PhotographyPage() {
         </ContainerSticky>
       </ContainerScroll>
 
-      <section className="relative z-10 mx-auto -mt-[45vh] flex max-w-5xl flex-col items-start justify-between gap-6 px-5 py-16 md:-mt-[35vh] md:flex-row md:items-center">
+      <section className="relative z-10 mx-auto -mt-[20vh] flex max-w-5xl flex-col items-start justify-between gap-6 px-5 py-16 md:-mt-[10vh] md:flex-row md:items-center">
         <h2 className="text-4xl font-semibold tracking-tight md:text-5xl">This is also me —</h2>
         <Link to="/" className="btn-primary">
           Back to dev portfolio

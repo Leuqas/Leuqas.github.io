@@ -112,8 +112,11 @@ export const GalleryContainer = ({
   ...props
 }: React.HTMLAttributes<HTMLDivElement> & HTMLMotionProps<"div">) => {
   const { scrollYProgress } = useContainerScrollContext()
-  const rotateX = useTransform(scrollYProgress, [0, 0.5], [75, 0])
-  const scale = useTransform(scrollYProgress, [0.5, 0.9], [1.2, 1])
+  // Option A overlap: snappier flatten (0 → 0.25), softer starting angle (50°
+  // instead of 75° so it doesn't fight the y-translation below), scale follows
+  // immediately after rotateX completes.
+  const rotateX = useTransform(scrollYProgress, [0, 0.25], [50, 0])
+  const scale = useTransform(scrollYProgress, [0.25, 0.6], [1.15, 1])
 
   return (
     <motion.div
@@ -143,7 +146,10 @@ export const GalleryCol = ({
   ...props
 }: HTMLMotionProps<"div"> & { yRange?: string[] }) => {
   const { scrollYProgress } = useContainerScrollContext()
-  const y = useTransform(scrollYProgress, [0.5, 1], yRange)
+  // Option A overlap: y starts at 0.1 — so vertical column motion is happening
+  // concurrently with the rotateX flatten. No more "nothing scrolls for 350vh"
+  // dead zone at the start of the gallery.
+  const y = useTransform(scrollYProgress, [0.1, 1], yRange)
 
   return (
     <motion.div
