@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   ArrowRight,
+  ArrowUpRight,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
@@ -218,7 +219,7 @@ export function PhotographyPage() {
       </div>
 
       <ContainerScroll id="gallery-grid" className="relative -mt-[100px] h-[700vh]">
-        <ContainerSticky className="h-svh">
+        <ContainerSticky className="h-svh top-16">
           <GalleryContainer className="mx-auto max-w-6xl px-4">
             <GalleryCol yRange={["0%", "-75%"]} className="-mt-2 pb-[300px]">
               {columns.leftImages.map((photo, index) => {
@@ -267,6 +268,25 @@ export function PhotographyPage() {
                   </button>
                 );
               })}
+
+              {/* "View all photos" tile — disguised as another gallery tile.
+                  Opens the lightbox at index 0 so the user can step through
+                  every photo using the existing prev/next + ESC keybindings. */}
+              <button
+                type="button"
+                onClick={() => setActiveIndex(0)}
+                className="group block w-full overflow-hidden rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                aria-label="Open all photos in lightbox"
+              >
+                <div className="aspect-video flex h-full w-full items-center justify-center rounded-md bg-foreground text-background shadow transition-transform duration-300 group-hover:scale-[1.02]">
+                  <div className="flex flex-col items-center gap-3 px-4 text-center">
+                    <span className="text-[11px] font-semibold uppercase tracking-[0.3em]">
+                      View all photos
+                    </span>
+                    <ArrowUpRight className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                  </div>
+                </div>
+              </button>
             </GalleryCol>
             <GalleryCol yRange={["0%", "-65%"]} className="-mt-2 pb-[300px]">
               {columns.rightImages.map((photo, index) => {
