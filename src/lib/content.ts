@@ -81,6 +81,17 @@ export const projects = [
     images: ["/images/tri1.webp", "/images/tri2.webp"],
   },
   {
+    title: "DepEd Admin Step Increment & Loyalty Award Monitor",
+    period: "Feb 2026 – Mar 2026",
+    status: "Completed",
+    stack: ["Node.js", "Electron", "Microsoft Excel"],
+    problem:
+      "DepEd school administrators track teacher step increments and loyalty award milestones manually — digging through Excel workbooks across multiple schools and doing date math by hand.",
+    solution:
+      "Desktop app that loads directly from existing school Excel workbooks. Parses each teacher's appointment history and automatically calculates when they're due for their next step increment and loyalty award. Everything surfaces in one dashboard: teacher cards, status badges, deadline flags, and per-school filtering.",
+    images: ["/images/admin1.webp"],
+  },
+  {
     title: "LegalEase PH",
     period: "Oct 2024 – Mar 2025",
     status: "Completed",
