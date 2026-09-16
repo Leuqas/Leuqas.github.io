@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import {
   ArrowRight,
   Camera,
@@ -5,10 +6,74 @@ import {
   Linkedin,
   Mail,
   MapPin,
-  MessageCircleMore,
   Phone,
 } from "lucide-react";
 import { ContainerAnimated, ContainerStagger } from "@/components/ui/animated-gallery";
+
+function completedYears(start: Date, now: Date) {
+  const anniversaryPending = now.getMonth() < start.getMonth()
+    || (now.getMonth() === start.getMonth() && now.getDate() < start.getDate());
+  return Math.max(0, now.getFullYear() - start.getFullYear() - Number(anniversaryPending));
+}
+
+function ExperienceBadge() {
+  const [values] = useState(() => {
+    const now = new Date();
+    const birthDate = new Date(2009, 9, 5);
+    // Use the 11th birthday consistently as the coding start date.
+    const codingStartDate = new Date(birthDate.getFullYear() + 11, 9, 5);
+    return {
+      age: completedYears(birthDate, now),
+      experience: completedYears(codingStartDate, now),
+    };
+  });
+  const [progress, setProgress] = useState(() =>
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 1 : 0,
+  );
+
+  useEffect(() => {
+    const preference = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let frame = 0;
+    let startedAt: number | undefined;
+
+    const tick = (timestamp: number) => {
+      startedAt ??= timestamp;
+      const elapsed = Math.min((timestamp - startedAt) / 900, 1);
+      setProgress(1 - Math.pow(1 - elapsed, 3));
+      if (elapsed < 1) frame = requestAnimationFrame(tick);
+    };
+    const finishIfReduced = () => {
+      if (preference.matches) {
+        cancelAnimationFrame(frame);
+        setProgress(1);
+      }
+    };
+
+    if (preference.matches) finishIfReduced();
+    else frame = requestAnimationFrame(tick);
+    preference.addEventListener("change", finishIfReduced);
+    return () => {
+      cancelAnimationFrame(frame);
+      preference.removeEventListener("change", finishIfReduced);
+    };
+  }, []);
+
+  return (
+    <p className="mt-6 inline-flex rounded-full border border-primary/15 bg-accent px-4 py-2 text-sm font-bold text-accent-foreground">
+      <span className="sr-only">
+        {values.experience} years of experience as a {values.age}-year-old Web Developer
+      </span>
+      <span aria-hidden="true">
+        <span className="inline-block text-right tabular-nums" style={{ minWidth: `${String(values.experience).length}ch` }}>
+          {Math.round(values.experience * progress)}
+        </span>{" "}years of experience as a{" "}
+        <span className="inline-block text-right tabular-nums" style={{ minWidth: `${String(values.age).length}ch` }}>
+          {Math.round(values.age * progress)}
+        </span>-year-old Web Developer
+      </span>
+    </p>
+  );
+}
 
 export function HeroSection() {
   return (
@@ -31,9 +96,7 @@ export function HeroSection() {
           </ContainerAnimated>
 
           <ContainerAnimated>
-            <p className="mt-6 inline-flex rounded-full border border-primary/15 bg-accent px-4 py-2 text-sm font-bold text-accent-foreground">
-              5 years of experience as a 16-year-old Web Developer
-            </p>
+            <ExperienceBadge />
           </ContainerAnimated>
 
           <ContainerAnimated>
