@@ -39,7 +39,7 @@ function ExperienceBadge() {
 
     const tick = (timestamp: number) => {
       startedAt ??= timestamp;
-      const elapsed = Math.min((timestamp - startedAt) / 3000, 1);
+      const elapsed = Math.min((timestamp - startedAt) / 2500, 1);
       setProgress(1 - Math.pow(1 - elapsed, 3));
       if (elapsed < 1) frame = requestAnimationFrame(tick);
     };
