@@ -53,7 +53,7 @@ function ExperienceBadge() {
     const startAfterLoad = () => {
       delay = window.setTimeout(() => {
         if (!preference.matches) frame = requestAnimationFrame(tick);
-      }, 150);
+      }, 200);
     };
 
     if (preference.matches) finishIfReduced();
