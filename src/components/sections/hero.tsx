@@ -16,8 +16,7 @@ function completedYears(start: Date, now: Date) {
   return Math.max(0, now.getFullYear() - start.getFullYear() - Number(anniversaryPending));
 }
 
-function ExperienceBadge({ ready }: { ready: boolean }) {
-  const [pageLoaded, setPageLoaded] = useState(() => document.readyState === "complete");
+function ExperienceBadge() {
   const [values] = useState(() => {
     const now = new Date();
     const birthDate = new Date(2009, 9, 5);
@@ -33,20 +32,13 @@ function ExperienceBadge({ ready }: { ready: boolean }) {
   );
 
   useEffect(() => {
-    const onLoad = () => setPageLoaded(true);
-    window.addEventListener("load", onLoad);
-    if (document.readyState === "complete") onLoad();
-    return () => window.removeEventListener("load", onLoad);
-  }, []);
-
-  useEffect(() => {
     const preference = window.matchMedia("(prefers-reduced-motion: reduce)");
     let frame = 0;
     let startedAt: number | undefined;
 
     const tick = (timestamp: number) => {
       startedAt ??= timestamp;
-      const elapsed = Math.min((timestamp - startedAt) / 2500, 1);
+      const elapsed = Math.min((timestamp - startedAt) / 3000, 1);
       setProgress(1 - Math.pow(1 - elapsed, 3));
       if (elapsed < 1) frame = requestAnimationFrame(tick);
     };
@@ -58,13 +50,13 @@ function ExperienceBadge({ ready }: { ready: boolean }) {
     };
 
     if (preference.matches) finishIfReduced();
-    else if (ready && pageLoaded) frame = requestAnimationFrame(tick);
+    else frame = requestAnimationFrame(tick);
     preference.addEventListener("change", finishIfReduced);
     return () => {
       cancelAnimationFrame(frame);
       preference.removeEventListener("change", finishIfReduced);
     };
-  }, [ready, pageLoaded]);
+  }, []);
 
   return (
     <p className="mt-6 inline-flex rounded-full border border-primary/15 bg-accent px-4 py-2 text-sm font-bold text-accent-foreground">
@@ -84,7 +76,6 @@ function ExperienceBadge({ ready }: { ready: boolean }) {
 }
 
 export function HeroSection() {
-  const [badgeReady, setBadgeReady] = useState(false);
   return (
     <section className="relative flex min-h-screen items-start overflow-hidden px-5 pt-16 md:items-center">
       <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle,hsl(var(--foreground)/0.13)_1px,transparent_1px)] [background-size:24px_24px] [mask-image:radial-gradient(circle_at_center,black,transparent_72%)]" />
@@ -104,10 +95,8 @@ export function HeroSection() {
             <p className="mt-3 text-sm font-semibold text-muted-foreground">He/Him</p>
           </ContainerAnimated>
 
-          <ContainerAnimated onAnimationComplete={(definition) => {
-            if (definition === "visible") setBadgeReady(true);
-          }}>
-            <ExperienceBadge ready={badgeReady} />
+          <ContainerAnimated>
+            <ExperienceBadge />
           </ContainerAnimated>
 
           <ContainerAnimated>
