@@ -16,7 +16,8 @@ function completedYears(start: Date, now: Date) {
   return Math.max(0, now.getFullYear() - start.getFullYear() - Number(anniversaryPending));
 }
 
-function ExperienceBadge() {
+function ExperienceBadge({ ready }: { ready: boolean }) {
+  const [pageLoaded, setPageLoaded] = useState(() => document.readyState === "complete");
   const [values] = useState(() => {
     const now = new Date();
     const birthDate = new Date(2009, 9, 5);
@@ -32,13 +33,20 @@ function ExperienceBadge() {
   );
 
   useEffect(() => {
+    const onLoad = () => setPageLoaded(true);
+    window.addEventListener("load", onLoad);
+    if (document.readyState === "complete") onLoad();
+    return () => window.removeEventListener("load", onLoad);
+  }, []);
+
+  useEffect(() => {
     const preference = window.matchMedia("(prefers-reduced-motion: reduce)");
     let frame = 0;
     let startedAt: number | undefined;
 
     const tick = (timestamp: number) => {
       startedAt ??= timestamp;
-      const elapsed = Math.min((timestamp - startedAt) / 900, 1);
+      const elapsed = Math.min((timestamp - startedAt) / 2500, 1);
       setProgress(1 - Math.pow(1 - elapsed, 3));
       if (elapsed < 1) frame = requestAnimationFrame(tick);
     };
@@ -50,13 +58,13 @@ function ExperienceBadge() {
     };
 
     if (preference.matches) finishIfReduced();
-    else frame = requestAnimationFrame(tick);
+    else if (ready && pageLoaded) frame = requestAnimationFrame(tick);
     preference.addEventListener("change", finishIfReduced);
     return () => {
       cancelAnimationFrame(frame);
       preference.removeEventListener("change", finishIfReduced);
     };
-  }, []);
+  }, [ready, pageLoaded]);
 
   return (
     <p className="mt-6 inline-flex rounded-full border border-primary/15 bg-accent px-4 py-2 text-sm font-bold text-accent-foreground">
@@ -65,10 +73,10 @@ function ExperienceBadge() {
       </span>
       <span aria-hidden="true">
         <span className="inline-block text-right tabular-nums" style={{ minWidth: `${String(values.experience).length}ch` }}>
-          {Math.round(values.experience * progress)}
+          {Math.floor(values.experience * progress)}
         </span>{" "}years of experience as a{" "}
         <span className="inline-block text-right tabular-nums" style={{ minWidth: `${String(values.age).length}ch` }}>
-          {Math.round(values.age * progress)}
+          {Math.floor(values.age * progress)}
         </span>-year-old Web Developer
       </span>
     </p>
@@ -76,6 +84,7 @@ function ExperienceBadge() {
 }
 
 export function HeroSection() {
+  const [badgeReady, setBadgeReady] = useState(false);
   return (
     <section className="relative flex min-h-screen items-start overflow-hidden px-5 pt-16 md:items-center">
       <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle,hsl(var(--foreground)/0.13)_1px,transparent_1px)] [background-size:24px_24px] [mask-image:radial-gradient(circle_at_center,black,transparent_72%)]" />
@@ -95,8 +104,10 @@ export function HeroSection() {
             <p className="mt-3 text-sm font-semibold text-muted-foreground">He/Him</p>
           </ContainerAnimated>
 
-          <ContainerAnimated>
-            <ExperienceBadge />
+          <ContainerAnimated onAnimationComplete={(definition) => {
+            if (definition === "visible") setBadgeReady(true);
+          }}>
+            <ExperienceBadge ready={badgeReady} />
           </ContainerAnimated>
 
           <ContainerAnimated>
