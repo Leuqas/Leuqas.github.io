@@ -34,6 +34,7 @@ function ExperienceBadge() {
   useEffect(() => {
     const preference = window.matchMedia("(prefers-reduced-motion: reduce)");
     let frame = 0;
+    let delay = 0;
     let startedAt: number | undefined;
 
     const tick = (timestamp: number) => {
@@ -49,11 +50,20 @@ function ExperienceBadge() {
       }
     };
 
+    const startAfterLoad = () => {
+      delay = window.setTimeout(() => {
+        if (!preference.matches) frame = requestAnimationFrame(tick);
+      }, 150);
+    };
+
     if (preference.matches) finishIfReduced();
-    else frame = requestAnimationFrame(tick);
+    else if (document.readyState === "complete") startAfterLoad();
+    else window.addEventListener("load", startAfterLoad, { once: true });
     preference.addEventListener("change", finishIfReduced);
     return () => {
       cancelAnimationFrame(frame);
+      window.clearTimeout(delay);
+      window.removeEventListener("load", startAfterLoad);
       preference.removeEventListener("change", finishIfReduced);
     };
   }, []);
