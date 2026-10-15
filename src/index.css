@@ -114,10 +114,11 @@ h4 {
 .blog-shell { min-height: 100vh; background: hsl(var(--background)); }
 .blog-back { display: inline-flex; align-items: center; gap: .55rem; color: hsl(var(--muted-foreground)); font-size: .78rem; font-weight: 600; transition: color .2s; }
 .blog-back:hover, .blog-back:focus-visible { color: hsl(var(--primary)); }
-.blog-prose { color: hsl(var(--foreground)); font-size: 1.05rem; line-height: 1.9; }
+.blog-prose { color: hsl(var(--foreground)); font-size: 1.1rem; line-height: 1.9; }
 .blog-prose p { margin: 0 0 1.6rem; }
 .blog-prose h2 { margin: 3rem 0 1rem; font-family: "Fraunces", serif; font-size: 2rem; line-height: 1.15; }
 .blog-prose blockquote { margin: 2.4rem 0; border-left: 2px solid hsl(var(--primary)); padding-left: 1.25rem; color: hsl(var(--muted-foreground)); font-family: "Fraunces", serif; font-size: 1.35rem; }
 .blog-prose hr { margin: 3rem 0 1.5rem; border: 0; border-top: 1px solid hsl(var(--border)); }
 .blog-shell a:focus-visible, .blog-shell button:focus-visible { outline: 2px solid hsl(var(--primary)); outline-offset: 4px; }
+@media (max-width: 767px) { .blog-prose { font-size: 1.2rem; } }
 @media (prefers-reduced-motion: reduce) { .blog-shell *, .blog-shell *::before, .blog-shell *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; } }

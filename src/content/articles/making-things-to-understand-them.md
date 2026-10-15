@@ -6,7 +6,7 @@ excerpt: An unfinished note on the way making can turn a vague idea into somethi
 subtitle: A reflection on the practice of building.
 category: Technology
 tags: [creativity, technology, making]
-status: published
+status: draft
 ---
 
 This entry is a placeholder for a future reflection about technology, creative work, and building things. The essay will be added here when it is ready.

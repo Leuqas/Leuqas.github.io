@@ -55,7 +55,7 @@ export function ArticlePage() {
         <div className="mt-7"><Meta article={article}/>{article.updatedAt && <p className="mt-2 text-xs text-muted-foreground">Updated <time dateTime={article.updatedAt}>{dateLabel(article.updatedAt)}</time></p>}</div>
         {article.tags && article.tags.length > 0 && <div className="mt-8 flex flex-wrap gap-2">{article.tags.map((tag) => <span className="tag" key={tag}>{tag}</span>)}</div>}
       </header>
-      <div className="blog-prose mx-auto max-w-[42rem] px-5">
+      <div className="blog-prose mx-auto max-w-[56rem] px-6 sm:px-5">
         <div dangerouslySetInnerHTML={{ __html: article.contentHtml }} />
       </div>
     </article>
