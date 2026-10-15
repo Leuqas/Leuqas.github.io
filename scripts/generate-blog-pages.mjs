@@ -31,9 +31,9 @@ function readingTime(entry) {
   return Math.max(1, Math.ceil(words / 220));
 }
 const archiveUrl = `${base}/blog/`;
-const archiveLd = { "@context": "https://schema.org", "@type": "CollectionPage", name: "Writing & notes | Leuqas Yabot", description: "A growing collection of essays, observations, experiments, and ideas.", url: archiveUrl, isPartOf: { "@type": "WebSite", name: "Leuqas Yabot", url: `${base}/` }, mainEntity: { "@type": "ItemList", itemListElement: published.map((entry, index) => ({ "@type": "ListItem", position: index + 1, url: `${base}/blog/${entry.slug}/`, name: entry.title })) } };
+const archiveLd = { "@context": "https://schema.org", "@type": "CollectionPage", name: "Recent writing | Leuqas Yabot", description: "A growing collection of essays, observations, experiments, and ideas.", url: archiveUrl, isPartOf: { "@type": "WebSite", name: "Leuqas Yabot", url: `${base}/` }, mainEntity: { "@type": "ItemList", itemListElement: published.map((entry, index) => ({ "@type": "ListItem", position: index + 1, url: `${base}/blog/${entry.slug}/`, name: entry.title })) } };
 await mkdir(resolve(dist, "blog"), { recursive: true });
-const archiveMarkup = `<main><header><p>Notes, essays &amp; experiments</p><h1>Writing &amp; notes</h1><p>A growing collection of essays, observations, experiments, and ideas.</p></header><section><h2>All writing</h2><ul>${published.map((entry) => `<li><a href="/blog/${escapeHtml(entry.slug)}/">${escapeHtml(entry.title)}</a><p>${escapeHtml(entry.excerpt)}</p></li>`).join("")}</ul></section></main>`;
+const archiveMarkup = `<main><header><p>Notes, essays &amp; experiments</p><h1>Writing &amp; notes</h1><p>A growing collection of essays, observations, experiments, and ideas.</p></header><section><h2>Recent writing</h2><ul>${published.map((entry) => `<li><a href="/blog/${escapeHtml(entry.slug)}/">${escapeHtml(entry.title)}</a><p>${escapeHtml(entry.excerpt)}</p></li>`).join("")}</ul></section></main>`;
 await writeFile(resolve(dist, "blog/index.html"), pageHtml({ title: "Writing & Notes | Leuqas Yabot", description: "A growing collection of personal essays, observations, experiments, and ideas by Leuqas Yabot.", url: archiveUrl, jsonLd: archiveLd, bodyMarkup: archiveMarkup }));
 
 for (const entry of published) {

@@ -1,6 +1,5 @@
-import { useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { ArrowLeft, ArrowUpRight, Search } from "lucide-react";
+import { ArrowLeft, ArrowUpRight } from "lucide-react";
 import { articleUrl, publishedArticles, readingTime, type Article } from "@/lib/articles";
 
 function dateLabel(date?: string) {
@@ -15,27 +14,16 @@ function Meta({ article }: { article: Article }) {
   </div>;
 }
 
-function ArticleLink({ article, featured = false }: { article: Article; featured?: boolean }) {
-  return <Link to={articleUrl(article.slug)} className={`group block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-4 ${featured ? "" : ""}`}>
+function ArticleLink({ article }: { article: Article }) {
+  return <Link to={articleUrl(article.slug)} className="group block rounded-lg border border-border bg-card p-5 transition-colors hover:border-primary/30 hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-4 md:p-6">
     <Meta article={article} />
-    <h2 className={`mt-3 font-serif font-medium leading-tight tracking-tight group-hover:text-primary ${featured ? "text-4xl md:text-6xl" : "text-2xl md:text-3xl"}`}>{article.title}<ArrowUpRight aria-hidden="true" className="ml-2 inline h-5 w-5 align-baseline opacity-0 transition group-hover:translate-x-1 group-hover:-translate-y-1 group-hover:opacity-100" /></h2>
+    <h2 className="mt-3 font-serif text-2xl font-medium leading-tight tracking-tight group-hover:text-primary md:text-3xl">{article.title}<ArrowUpRight aria-hidden="true" className="ml-2 inline h-5 w-5 align-baseline opacity-0 transition group-hover:translate-x-1 group-hover:-translate-y-1 group-hover:opacity-100" /></h2>
     <p className="mt-3 max-w-2xl text-sm leading-7 text-muted-foreground">{article.excerpt}</p>
     <span className="mt-4 inline-block text-xs font-bold uppercase tracking-[0.18em] text-primary">Read essay <span aria-hidden="true">→</span></span>
   </Link>;
 }
 
 export function BlogPage() {
-  const [query, setQuery] = useState("");
-  const [category, setCategory] = useState("All writing");
-  const categories = ["All writing", ...new Set(publishedArticles.map((post) => post.category).filter((category): category is string => Boolean(category)))];
-  const featured = publishedArticles.find((post) => post.featured);
-  const showFeatured = featured && category === "All writing" && (!query || `${featured.title} ${featured.description} ${(featured.tags ?? []).join(" ")}`.toLowerCase().includes(query.toLowerCase()));
-  const posts = useMemo(() => publishedArticles
-    .filter((post) => !showFeatured || post.slug !== featured?.slug)
-    .filter((post) => category === "All writing" || post.category === category)
-    .filter((post) => `${post.title} ${post.description} ${(post.tags ?? []).join(" ")}`.toLowerCase().includes(query.toLowerCase()))
-    .sort((a, b) => (b.publishedAt ?? "").localeCompare(a.publishedAt ?? "")), [category, query, featured?.slug, showFeatured]);
-
   return <main className="blog-shell pt-16">
     <section className="mx-auto max-w-5xl px-5 pb-10 pt-16 md:pb-16 md:pt-24">
       <Link to="/" className="blog-back"><ArrowLeft size={15}/> Back to portfolio</Link>
@@ -44,16 +32,9 @@ export function BlogPage() {
       <p className="mt-6 max-w-xl text-base leading-8 text-muted-foreground">A growing collection of essays, observations, experiments, and ideas. Some are finished; others are still taking shape.</p>
     </section>
     <div className="mx-auto max-w-5xl px-5">
-      {showFeatured && <section className="blog-featured" aria-label="Featured writing"><p className="section-label mb-6">Featured essay</p><ArticleLink article={featured} featured/></section>}
-      <section className="py-12 md:py-16" aria-labelledby="archive-heading">
-        <div className="flex flex-col justify-between gap-5 border-b border-border pb-6 md:flex-row md:items-end">
-          <div><p className="section-label">The archive</p><h2 id="archive-heading" className="mt-2 font-serif text-3xl md:text-4xl">All writing</h2></div>
-          <label className="blog-search"><Search size={16} aria-hidden="true"/><span className="sr-only">Search articles</span><input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search the archive" /></label>
-        </div>
-        <div className="flex flex-wrap gap-2 py-5" aria-label="Filter by category">
-          {categories.map((item) => <button key={item} type="button" onClick={() => setCategory(item)} aria-pressed={category === item} className={`blog-filter ${category === item ? "is-active" : ""}`}>{item}</button>)}
-        </div>
-        {posts.length ? <div className="divide-y divide-border">{posts.map((article) => <article key={article.slug} className="blog-row"><ArticleLink article={article}/></article>)}</div> : <div className="blog-empty"><p className="font-serif text-2xl">Nothing here just yet.</p><p className="mt-2 text-sm text-muted-foreground">Try another search or category to find a note.</p><button onClick={() => { setQuery(""); setCategory("All writing"); }} className="mt-4 text-sm font-semibold text-primary underline underline-offset-4">Clear filters</button></div>}
+      <section className="py-12 md:py-16" aria-labelledby="recent-writing-heading">
+        <div className="mb-6 border-b border-border pb-4"><p className="section-label">Recent writing</p><h2 id="recent-writing-heading" className="sr-only">Recent writing</h2></div>
+        <div className="grid gap-4">{publishedArticles.map((article) => <ArticleLink key={article.slug} article={article}/>)}</div>
       </section>
     </div>
   </main>;
@@ -62,7 +43,7 @@ export function BlogPage() {
 export function ArticlePage() {
   const { slug } = useParams();
   const article = publishedArticles.find((post) => post.slug === slug);
-  if (!article) return <main className="blog-shell min-h-screen px-5 pt-32"><div className="mx-auto max-w-3xl"><p className="section-label">404 · not found</p><h1 className="mt-4 font-serif text-5xl">This page is still unwritten.</h1><Link to="/blog/" className="blog-back mt-8"><ArrowLeft size={15}/> Return to the archive</Link></div></main>;
+  if (!article) return <main className="blog-shell min-h-screen px-5 pt-32"><div className="mx-auto max-w-3xl"><p className="section-label">404 · not found</p><h1 className="mt-4 font-serif text-5xl">This page is still unwritten.</h1><Link to="/blog/" className="blog-back mt-8"><ArrowLeft size={15}/> Return to recent writing</Link></div></main>;
   const related = publishedArticles.filter((post) => post.slug !== article.slug && (post.tags ?? []).some((tag) => (article.tags ?? []).includes(tag))).slice(0, 2);
   return <main className="blog-shell min-h-screen pt-16">
     <article>

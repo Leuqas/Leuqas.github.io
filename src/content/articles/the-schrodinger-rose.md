@@ -7,7 +7,6 @@ subtitle: Notes toward an essay about uncertainty and interpretation.
 category: Essays
 tags: [uncertainty, relationships, philosophy]
 status: published
-featured: true
 ---
 
 This is a placeholder for a future long-form essay. It will explore how an idea from quantum mechanics can serve as a metaphor for uncertainty and social interpretation.

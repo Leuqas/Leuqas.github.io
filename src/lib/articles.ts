@@ -13,7 +13,6 @@ export type Article = {
   publishedAt?: string;
   updatedAt?: string;
   status: "draft" | "published";
-  featured?: boolean;
   content: string;
   contentHtml: string;
 };
