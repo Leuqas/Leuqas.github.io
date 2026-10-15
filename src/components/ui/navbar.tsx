@@ -75,6 +75,9 @@ export function Navbar() {
           >
             Photography
           </Link>
+          <Link to="/blog/" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
+            Writing
+          </Link>
           <button type="button" onClick={goToTop} className="btn-primary">
             Hire me
           </button>
@@ -109,6 +112,9 @@ export function Navbar() {
               className="rounded-md px-2 py-2 text-sm font-medium text-muted-foreground underline underline-offset-4 hover:bg-secondary hover:text-foreground"
             >
               Photography
+            </Link>
+            <Link to="/blog/" onClick={() => setOpen(false)} className="rounded-md px-2 py-2 text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground">
+              Writing
             </Link>
             <button type="button" onClick={goToTop} className="btn-primary w-fit">
               Hire me
