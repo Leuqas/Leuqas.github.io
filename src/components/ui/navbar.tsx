@@ -76,7 +76,7 @@ export function Navbar() {
             Photography
           </Link>
           <Link to="/blog/" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
-            Writing
+            Blog
           </Link>
           <button type="button" onClick={goToTop} className="btn-primary">
             Hire me
@@ -114,7 +114,7 @@ export function Navbar() {
               Photography
             </Link>
             <Link to="/blog/" onClick={() => setOpen(false)} className="rounded-md px-2 py-2 text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground">
-              Writing
+              Blog
             </Link>
             <button type="button" onClick={goToTop} className="btn-primary w-fit">
               Hire me
@@ -125,3 +125,4 @@ export function Navbar() {
     </header>
   );
 }
+
