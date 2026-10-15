@@ -1,26 +1,40 @@
-import entries from "./articles.json";
+import { marked } from "marked";
+import { parse as parseYaml } from "yaml";
 
 export type Article = {
   slug: string;
   title: string;
   description: string;
   excerpt: string;
-  subtitle: string;
-  category: string;
-  tags: string[];
+  subtitle?: string;
+  author?: string;
+  category?: string;
+  tags?: string[];
   publishedAt?: string;
   updatedAt?: string;
   status: "draft" | "published";
   featured?: boolean;
-  content: { type: "paragraph" | "heading" | "quote"; text: string }[];
+  content: string;
+  contentHtml: string;
 };
 
-// Add new entries to articles.json. Dates remain unset until publication.
-export const articles = entries as Article[];
-export const publishedArticles = articles.filter((article) => article.status === "published");
+const files = import.meta.glob<string>("@/content/articles/*.md", { eager: true, query: "?raw", import: "default" });
+
+function parseArticle(source: string): Article {
+  const match = source.match(/^---\s*\r?\n([\s\S]*?)\r?\n---\s*\r?\n?([\s\S]*)$/);
+  if (!match) throw new Error("Article is missing YAML front matter.");
+  const metadata = parseYaml(match[1]) as Omit<Article, "content" | "contentHtml">;
+  const content = match[2].trim();
+  return { ...metadata, content, contentHtml: marked.parse(content, { async: false }) as string };
+}
+
+export const articles = Object.values(files).map(parseArticle);
+export const publishedArticles = articles
+  .filter((article) => article.status === "published")
+  .sort((a, b) => (b.publishedAt ?? "").localeCompare(a.publishedAt ?? ""));
 
 export function readingTime(article: Article) {
-  const words = article.content.map((block) => block.text).join(" ").trim().split(/\s+/).filter(Boolean).length;
+  const words = article.content.trim().split(/\s+/).filter(Boolean).length;
   return Math.max(1, Math.ceil(words / 220));
 }
 

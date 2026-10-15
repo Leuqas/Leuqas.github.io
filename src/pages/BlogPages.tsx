@@ -11,7 +11,7 @@ function Meta({ article }: { article: Article }) {
   return <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
     {dateLabel(article.publishedAt) && <time dateTime={article.publishedAt}>{dateLabel(article.publishedAt)}</time>}
     {dateLabel(article.publishedAt) && <span aria-hidden="true">·</span>}
-    <span>{readingTime(article)} min read</span><span aria-hidden="true">·</span><span>{article.category}</span>
+    <span>{readingTime(article)} min read</span>{article.category && <><span aria-hidden="true">·</span><span>{article.category}</span></>}
   </div>;
 }
 
@@ -27,13 +27,13 @@ function ArticleLink({ article, featured = false }: { article: Article; featured
 export function BlogPage() {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("All writing");
-  const categories = ["All writing", ...new Set(publishedArticles.map((post) => post.category))];
+  const categories = ["All writing", ...new Set(publishedArticles.map((post) => post.category).filter((category): category is string => Boolean(category)))];
   const featured = publishedArticles.find((post) => post.featured);
-  const showFeatured = featured && category === "All writing" && (!query || `${featured.title} ${featured.description} ${featured.tags.join(" ")}`.toLowerCase().includes(query.toLowerCase()));
+  const showFeatured = featured && category === "All writing" && (!query || `${featured.title} ${featured.description} ${(featured.tags ?? []).join(" ")}`.toLowerCase().includes(query.toLowerCase()));
   const posts = useMemo(() => publishedArticles
     .filter((post) => !showFeatured || post.slug !== featured?.slug)
     .filter((post) => category === "All writing" || post.category === category)
-    .filter((post) => `${post.title} ${post.description} ${post.tags.join(" ")}`.toLowerCase().includes(query.toLowerCase()))
+    .filter((post) => `${post.title} ${post.description} ${(post.tags ?? []).join(" ")}`.toLowerCase().includes(query.toLowerCase()))
     .sort((a, b) => (b.publishedAt ?? "").localeCompare(a.publishedAt ?? "")), [category, query, featured?.slug, showFeatured]);
 
   return <main className="blog-shell pt-16">
@@ -63,20 +63,19 @@ export function ArticlePage() {
   const { slug } = useParams();
   const article = publishedArticles.find((post) => post.slug === slug);
   if (!article) return <main className="blog-shell min-h-screen px-5 pt-32"><div className="mx-auto max-w-3xl"><p className="section-label">404 · not found</p><h1 className="mt-4 font-serif text-5xl">This page is still unwritten.</h1><Link to="/blog/" className="blog-back mt-8"><ArrowLeft size={15}/> Return to the archive</Link></div></main>;
-  const related = publishedArticles.filter((post) => post.slug !== article.slug && post.tags.some((tag) => article.tags.includes(tag))).slice(0, 2);
+  const related = publishedArticles.filter((post) => post.slug !== article.slug && (post.tags ?? []).some((tag) => (article.tags ?? []).includes(tag))).slice(0, 2);
   return <main className="blog-shell min-h-screen pt-16">
     <article>
       <header className="mx-auto max-w-3xl px-5 pb-12 pt-14 md:pb-16 md:pt-20">
-        <nav aria-label="Breadcrumb" className="blog-back"><Link to="/blog/">Writing</Link><span aria-hidden="true">/</span><span>{article.category}</span></nav>
-        <p className="section-label mt-10">{article.category}</p>
+        <nav aria-label="Breadcrumb" className="blog-back"><Link to="/blog/">Writing</Link>{article.category && <><span aria-hidden="true">/</span><span>{article.category}</span></>}</nav>
+        {article.category && <p className="section-label mt-10">{article.category}</p>}
         <h1 className="mt-4 font-serif text-5xl font-medium leading-[1.02] tracking-tight md:text-7xl">{article.title}</h1>
-        <p className="mt-5 max-w-2xl text-lg leading-8 text-muted-foreground">{article.subtitle}</p>
+        {article.subtitle && <p className="mt-5 max-w-2xl text-lg leading-8 text-muted-foreground">{article.subtitle}</p>}
         <div className="mt-7"><Meta article={article}/>{article.updatedAt && <p className="mt-2 text-xs text-muted-foreground">Updated <time dateTime={article.updatedAt}>{dateLabel(article.updatedAt)}</time></p>}</div>
-        <div className="mt-8 flex flex-wrap gap-2">{article.tags.map((tag) => <span className="tag" key={tag}>{tag}</span>)}</div>
+        {article.tags && article.tags.length > 0 && <div className="mt-8 flex flex-wrap gap-2">{article.tags.map((tag) => <span className="tag" key={tag}>{tag}</span>)}</div>}
       </header>
       <div className="blog-prose mx-auto max-w-[42rem] px-5">
-        {article.content.map((block, index) => block.type === "heading" ? <h2 key={index}>{block.text}</h2> : block.type === "quote" ? <blockquote key={index}>{block.text}</blockquote> : <p key={index}>{block.text}</p>)}
-        <hr/><p className="text-sm text-muted-foreground">This is a placeholder entry. The full essay will appear here when it is ready.</p>
+        <div dangerouslySetInnerHTML={{ __html: article.contentHtml }} />
       </div>
     </article>
     <footer className="mx-auto max-w-3xl px-5 pb-20 pt-12">

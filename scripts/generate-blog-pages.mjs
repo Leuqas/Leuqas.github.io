@@ -1,12 +1,21 @@
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, readdir, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
+import { parse as parseYaml } from "yaml";
+import { marked } from "marked";
 
 const base = "https://leuqas.github.io";
 const root = process.cwd();
 const dist = resolve(root, "dist");
 const template = await readFile(resolve(dist, "index.html"), "utf8");
-const entries = JSON.parse(await readFile(resolve(root, "src/lib/articles.json"), "utf8"));
-const published = entries.filter((entry) => entry.status === "published");
+const sourceDir = resolve(root, "src/content/articles");
+const entries = await Promise.all((await readdir(sourceDir)).filter((name) => name.endsWith(".md")).map(async (name) => {
+  const source = await readFile(resolve(sourceDir, name), "utf8");
+  const match = source.match(/^---\s*\r?\n([\s\S]*?)\r?\n---\s*\r?\n?([\s\S]*)$/);
+  if (!match) throw new Error(`${name} is missing YAML front matter`);
+  const metadata = parseYaml(match[1]);
+  return { ...metadata, content: match[2].trim(), contentHtml: marked.parse(match[2].trim(), { async: false }) };
+}));
+const published = entries.filter((entry) => entry.status === "published").sort((a, b) => (b.publishedAt ?? "").localeCompare(a.publishedAt ?? ""));
 
 function escapeHtml(value = "") {
   return String(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#39;");
@@ -18,7 +27,7 @@ function pageHtml({ title, description, url, type = "website", jsonLd, bodyMarku
   return html;
 }
 function readingTime(entry) {
-  const words = entry.content.map((block) => block.text).join(" ").trim().split(/\s+/).filter(Boolean).length;
+  const words = entry.content.replace(/```[\s\S]*?```/g, " ").replace(/[#>*_`~\[\]()!-]/g, " ").trim().split(/\s+/).filter(Boolean).length;
   return Math.max(1, Math.ceil(words / 220));
 }
 const archiveUrl = `${base}/blog/`;
@@ -29,10 +38,10 @@ await writeFile(resolve(dist, "blog/index.html"), pageHtml({ title: "Writing & N
 
 for (const entry of published) {
   const url = `${base}/blog/${entry.slug}/`;
-  const jsonLd = { "@context": "https://schema.org", "@type": "BlogPosting", headline: entry.title, description: entry.description, url, mainEntityOfPage: url, author: { "@type": "Person", name: "Leuqas Yabot" }, publisher: { "@type": "Person", name: "Leuqas Yabot" }, articleSection: entry.category, keywords: entry.tags.join(", "), timeRequired: `PT${readingTime(entry)}M`, ...(entry.publishedAt ? { datePublished: entry.publishedAt } : {}), ...(entry.updatedAt ? { dateModified: entry.updatedAt } : {}) };
+  const jsonLd = { "@context": "https://schema.org", "@type": "BlogPosting", headline: entry.title, description: entry.description, url, mainEntityOfPage: url, author: { "@type": "Person", name: entry.author ?? "Leuqas Yabot" }, publisher: { "@type": "Person", name: entry.author ?? "Leuqas Yabot" }, ...(entry.category ? { articleSection: entry.category } : {}), ...(entry.tags?.length ? { keywords: entry.tags.join(", ") } : {}), timeRequired: `PT${readingTime(entry)}M`, ...(entry.publishedAt ? { datePublished: entry.publishedAt } : {}), ...(entry.updatedAt ? { dateModified: entry.updatedAt } : {}) };
   const pageDir = resolve(dist, "blog", entry.slug);
   await mkdir(pageDir, { recursive: true });
-  const articleMarkup = `<main><nav aria-label="Breadcrumb"><a href="/blog/">Writing</a> / ${escapeHtml(entry.category)}</nav><article><header><h1>${escapeHtml(entry.title)}</h1><p>${escapeHtml(entry.subtitle)}</p><p>${escapeHtml(entry.category)} · ${readingTime(entry)} min read</p></header>${entry.content.map((block) => block.type === "heading" ? `<h2>${escapeHtml(block.text)}</h2>` : block.type === "quote" ? `<blockquote>${escapeHtml(block.text)}</blockquote>` : `<p>${escapeHtml(block.text)}</p>`).join("")}<p>This is a placeholder entry. The full essay will appear here when it is ready.</p></article><a href="/blog/">Back to all writing</a></main>`;
+  const articleMarkup = `<main><nav aria-label="Breadcrumb"><a href="/blog/">Writing</a>${entry.category ? ` / ${escapeHtml(entry.category)}` : ""}</nav><article><header>${entry.category ? `<p>${escapeHtml(entry.category)}</p>` : ""}<h1>${escapeHtml(entry.title)}</h1>${entry.subtitle ? `<p>${escapeHtml(entry.subtitle)}</p>` : ""}<p>${readingTime(entry)} min read</p></header>${entry.contentHtml}</article><a href="/blog/">Back to all writing</a></main>`;
   await writeFile(resolve(pageDir, "index.html"), pageHtml({ title: `${entry.title} | Leuqas Yabot`, description: entry.description, url, type: "article", jsonLd, bodyMarkup: articleMarkup }));
 }
 
