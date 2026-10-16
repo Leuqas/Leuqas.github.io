@@ -2,7 +2,7 @@
 slug: schrodinger-rose
 title: Schrödinger’s Rose
 description: On hobbies, obsessions, and a very nerdy quote.
-excerpt: I have so much life in me that it’s funny how I oftentimes forget it when there’s so much life in front of me.
+excerpt: The ultimate goal would be to eventually be placed in a superposition, where using that quote would feel right and wrong at the same time, yet I'd collapse the wave function and say it anyway.
 subtitle: An essay about making things, getting obsessed with ideas, and the unexpected thought that became Schrodinger’s rose.
 author: Leuqas Yabot
 category: Personal essays
