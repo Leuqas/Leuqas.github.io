@@ -11,7 +11,7 @@ tags: [making, hobbies, quantum mechanics, reflection]
 status: published
 ---
 
-> &emsp;“The ultimate goal would be to eventually be placed in a **superposition**, where using that quote would feel right and wrong at the same time, yet I'd collapse the wave function and say it anyway.”
+> &emsp;“The ultimate goal would be to eventually be placed in a *superposition*, where using that quote would feel right and wrong at the same time, **yet I'd collapse the wave function and say it anyway**.”
 
 &emsp;I have a habit of getting obsessed with things. Pag ako na curious, I can spend hours trying to understand how it works, what I can make with it, or why the idea keeps coming back to me. Shet, Schrödinger’s cat has been one of those topics for the longest time. It’s such an absolute nerd of a topic: a cat in a box, a quantum event, and a question that somehow makes “knowing” feel complicated. I found it fascinating, and then, of course, I kept thinking about it.
 
@@ -45,4 +45,4 @@ Somehow, after obsessing over Schrödinger’s cat for so long, my brain came up
 
 *Oh diba, mas may bitaw sa traditional na banat. How they ARE the prettiest flowers, until [person's] around. perfectly reflecting the concept of **quantum mechanics**.*
 
-The ultimate goal would be to eventually be placed in a **superposition**, where using that quote would feel right and wrong at the same time, yet I'd collapse the wave function and say it anyway.    
+The ultimate goal would be to eventually be placed in a *superposition*, where using that quote would feel right and wrong at the same time, **yet I'd collapse the wave function and say it anyway**.
