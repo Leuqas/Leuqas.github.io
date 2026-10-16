@@ -37,7 +37,7 @@ I have so much life in me that it’s funny how I oftentimes forget it when ther
 
 Time check: May 23, 2026. Peak of my writing, and somehow romantic period even without a desire to be in a relationship—awit, **just romanticising the thought of romance**. 
 
-&emsp;Then pumasok sa utak ko mga *banat*. Usually, when someone gives a person flowers, the line is something like, “You’re prettier than the flowers.” Which is fine, but I wondered how perfect it would be to combine that familiar banat with a topic ive been nerding about.
+&emsp;Then pumasok sa utak ko mga *banat*. When someone gives a person flowers, the usual banat would be something like, “You’re prettier than the flowers.” Which is fine, but I wondered how perfect it would be to combine that familiar banat with a topic ive been nerding about.
 
 Somehow, after obsessing over Schrödinger’s cat for so long, my brain came up with: 
 ## **“Schrodingers Rose: ‘The prettiest flowers— until you're around’”**. 
