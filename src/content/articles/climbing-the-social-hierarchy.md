@@ -3,6 +3,7 @@ slug: climbing-the-social-hierarchy
 title: Climbing the Social Hierarchy
 description: A personal essay about chasing a place in a social ladder that never really existed.
 excerpt: I spent years trying to climb a social hierarchy, only to realize the ladder was a treadmill—and that the people around me had stories I had never bothered to ask about.
+author: Leuqas Yabot
 subtitle: Written for Envirex Ampersand, Volume 39.
 category: Personal essays
 tags: [envirex, social, reflection]
