@@ -1,9 +1,10 @@
 ---
-slug: the-schrodinger-rose
-title: The Schrödinger’s Rose
-description: An essay about making things, getting obsessed with ideas, and the unexpected thought that became Schrödinger’s rose.
+slug: schrodinger-rose
+title: Schrödinger’s Rose
+description: On hobbies, obsessions, and a very nerdy quote.
 excerpt: I have so much life in me that it’s funny how I oftentimes forget it when there’s so much life in front of me.
-subtitle: On hobbies, obsessions, and a very nerdy quote.
+subtitle: An essay about making things, getting obsessed with ideas, and the unexpected thought that became Schrodinger’s rose.
+author: Leuqas Yabot
 category: Personal essays
 publishedAt: "2026-05-23"
 tags: [making, hobbies, quantum mechanics, reflection]

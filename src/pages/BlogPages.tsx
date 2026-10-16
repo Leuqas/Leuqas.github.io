@@ -10,6 +10,7 @@ function Meta({ article }: { article: Article }) {
   return <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
     {dateLabel(article.publishedAt) && <time dateTime={article.publishedAt}>{dateLabel(article.publishedAt)}</time>}
     {dateLabel(article.publishedAt) && <span aria-hidden="true">·</span>}
+    {article.author && <><span>By {article.author}</span><span aria-hidden="true">·</span></>}
     <span>{readingTime(article)} min read</span>{article.category && <><span aria-hidden="true">·</span><span>{article.category}</span></>}
   </div>;
 }
