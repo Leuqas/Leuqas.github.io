@@ -7,7 +7,7 @@ subtitle: An essay about making things, getting obsessed with ideas, and the une
 author: Leuqas Yabot
 category: Personal essays
 publishedAt: "2026-05-23"
-tags: [making, hobbies, quantum mechanics, reflection]
+tags: [making, hobbies, quantum mechanics, quote]
 status: published
 ---
 
