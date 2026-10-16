@@ -9,6 +9,7 @@ tags: [envirex, social, reflection]
 publishedAt: "2025-05-25"
 status: published
 ---
+> "It wasn't even a ladder to begin with. Just now have I came to the realization that it was a running treadmill."
 
 &emsp;**Social status**—an idea I once frowned upon. Moreover, the fact that people tried to climb this so-called ladder baffled me. I used to believe that gaining friends—or to a greater extent, popularity—should come naturally, as if it was just bound to happen to certain people. Maybe because of the way they talk, their looks, or how they approach things. I found the concept that people climbed this, even strategizing each action just for a small boost, ridiculous. Until, of course, I found myself doing it.
 
