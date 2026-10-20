@@ -27,7 +27,7 @@ function pageHtml({ title, description, url, type = "website", jsonLd, bodyMarku
     .replace(/\s*<meta name="twitter:[^"]*" content="[^"]*" \/>/g, "")
     .replace(/\s*<script type="application\/ld\+json">[\s\S]*?<\/script>/, "");
   const head = `\n    <link rel="canonical" href="${url}" />\n    <meta property="og:type" content="${type}" />\n    <meta property="og:title" content="${escapeHtml(title)}" />\n    <meta property="og:description" content="${escapeHtml(description)}" />\n    <meta property="og:url" content="${url}" />\n    <meta property="og:site_name" content="Leuqas Yabot" />\n    <meta name="twitter:card" content="summary" />\n    <meta name="twitter:title" content="${escapeHtml(title)}" />\n    <meta name="twitter:description" content="${escapeHtml(description)}" />\n    <script type="application/ld+json">${JSON.stringify(jsonLd).replaceAll("<", "\\u003c")}</script>`;
-  html = html.replace(/<meta\s+name="description"[\s\S]*?\/>/, `<meta name="description" content="${escapeHtml(description)}" />`).replace("</head>", `${head}\n  </head>`).replace(/<title>[^<]*<\/title>/, `<title>${escapeHtml(title)}</title>`).replace('<div id="root"></div>', `<div id="root">${bodyMarkup}</div>`);
+  html = html.replace(/<meta\s+name="description"[\s\S]*?\/>/, `<meta name="description" content="${escapeHtml(description)}" />`).replace("</head>", `${head}\n  </head>`).replace(/<title>[^<]*<\/title>/, `<title>${escapeHtml(title)}</title>`).replace(/<div id="root">[\s\S]*?<!-- \/static-home-shell -->\s*<\/div>/, `<div id="root">${bodyMarkup}</div>`);
   return html;
 }
 function readingTime(entry) {

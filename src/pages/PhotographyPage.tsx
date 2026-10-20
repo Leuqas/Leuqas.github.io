@@ -46,7 +46,6 @@ const photos: Photo[] = Object.entries(fullModules)
     const name = p.split("/").pop() ?? p;
     const thumb = thumbByName.get(name);
     if (!thumb) {
-      // eslint-disable-next-line no-console
       console.warn(
         `[gallery] missing thumb for ${name}; falling back to full URL. Run \`npm run optimize:images\`.`,
       );
