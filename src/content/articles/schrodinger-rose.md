@@ -2,8 +2,8 @@
 slug: schrodinger-rose
 title: Schrodinger’s Rose
 description: On hobbies, obsessions, and a very nerdy quote.
-excerpt: The ultimate goal would be to eventually be placed in a superposition, where using that quote would feel right and wrong at the same time, yet I'd collapse the wave function and say it anyway.
-subtitle: An essay about making things, getting obsessed with ideas, and the unexpected thought that became Schrodinger’s rose.
+excerpt: ‘The prettiest flowers— until you're around.’ The ultimate goal would be to eventually be placed in a superposition, where using that quote would feel right and wrong at the same time, yet I'd collapse the wave function and say it anyway.
+subtitle: ‘The prettiest flowers— until you're around’
 author: Leuqas Yabot
 category: Personal essays
 publishedAt: "2026-05-23"
